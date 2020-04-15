@@ -1,0 +1,8 @@
+{
+    "parent": "block/orientable",
+    "textures": {
+        "top": "magelighter:blocks/dark_stone_top",
+        "front": "magelighter:blocks/dark_stone_front_on",
+        "side": "magelighter:blocks/dark_stone_side"
+    }
+}

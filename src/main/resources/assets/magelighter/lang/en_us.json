@@ -1,0 +1,9 @@
+{
+  "effect.magelighter.more_health": "More Health Effect",
+  "item.magelighter.potion.effect.more_health": "More Health Potion",
+  "item.magelighter.splash_potion.effect.more_health": "More Health Splash Potion",
+  "item.magelighter.lingering_potion.effect.more_health": "More Health Lingering Potion",
+  "item.magelighter.tipped_arrow.effect.more_health": "Arrow of More Health",
+
+  "block.magelighter.clerics_oven": "Cleric's Oven"
+}
