@@ -38,6 +38,7 @@ public class ByProductRecipes {
         // Dustment Recipes
         addByProductRecipe(new ItemStack(Items.IRON_ORE), new ItemStack(ItemList.JAR), new ItemStack(ItemList.RUIN_DUST), 0F, 0.3D);
         addByProductRecipe(new ItemStack(Items.GOLD_ORE), new ItemStack(ItemList.JAR), new ItemStack(ItemList.PRESERVATION_DUST), 0F, 0.3D);
+        addByProductRecipe(new ItemStack(ItemList.COPPER_ORE), new ItemStack(ItemList.JAR), new ItemStack(ItemList.AUTONOMY_DUST), 0, 0.3D);
     }
 
     public void addByProductRecipe(ItemStack input1, ItemStack input2, ItemStack result, float experience, double chance) {

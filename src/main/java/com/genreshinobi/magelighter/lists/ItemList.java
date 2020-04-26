@@ -39,5 +39,11 @@ public class ItemList {
     @ObjectHolder("magelighter:copper_ingot")
     public static Item COPPER_INGOT;
 
+    @ObjectHolder("magelighter:copper_nugget")
+    public static Item COPPER_NUGGET;
+
+    @ObjectHolder("magelighter:copper_block")
+    public static Item COPPER_BLOCK;
+
 
 }
