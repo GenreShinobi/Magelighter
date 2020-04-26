@@ -12,5 +12,4 @@ public class MagelighterGroup extends ItemGroup {
 
     @Override
     public ItemStack createIcon() { return new ItemStack(ItemList.JAR); }
-
 }

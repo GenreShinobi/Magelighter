@@ -7,15 +7,17 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Table;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Map;
 import java.util.Map.Entry;
 
 public class ByProductRecipes {
+    public static Logger LOGGER = Magelighter.LOGGER;
     private static final ByProductRecipes INSTANCE = new ByProductRecipes();
     private final Table<ItemStack, ItemStack, ItemStack> byProductList = HashBasedTable.create();
     private final Map<ItemStack, Float> experienceList = Maps.newHashMap();
-    private final Map<ItemStack, Integer> chanceList = Maps.newHashMap();
+    private final Map<ItemStack, Double> chanceList = Maps.newHashMap();
 
     public static ByProductRecipes getInstance() {
         return INSTANCE;
@@ -23,22 +25,22 @@ public class ByProductRecipes {
 
     private ByProductRecipes() {
         // Ashen Fond Recipes
-        addByProductRecipe(new ItemStack(Items.POTATO), new ItemStack(ItemList.JAR), new ItemStack(ItemList.ASHEN_FOND), 0F, 20);
-        addByProductRecipe(new ItemStack(Items.CHICKEN), new ItemStack(ItemList.JAR), new ItemStack(ItemList.ASHEN_FOND), 0F,20);
-        addByProductRecipe(new ItemStack(Items.COD), new ItemStack(ItemList.JAR), new ItemStack(ItemList.ASHEN_FOND), 0F, 20);
-        addByProductRecipe(new ItemStack(Items.MUTTON), new ItemStack(ItemList.JAR), new ItemStack(ItemList.ASHEN_FOND), 0F, 20);
-        addByProductRecipe(new ItemStack(Items.PORKCHOP), new ItemStack(ItemList.JAR), new ItemStack(ItemList.ASHEN_FOND), 0F, 20);
-        addByProductRecipe(new ItemStack(Items.SALMON), new ItemStack(ItemList.JAR), new ItemStack(ItemList.ASHEN_FOND), 0F, 20);
-        addByProductRecipe(new ItemStack(Items.RABBIT), new ItemStack(ItemList.JAR), new ItemStack(ItemList.ASHEN_FOND), 0F, 20);
-        addByProductRecipe(new ItemStack(Items.BEEF), new ItemStack(ItemList.JAR), new ItemStack(ItemList.ASHEN_FOND), 0F, 20);
-        addByProductRecipe(new ItemStack(Items.KELP), new ItemStack(ItemList.JAR), new ItemStack(ItemList.ASHEN_FOND), 0F, 20);
+        addByProductRecipe(new ItemStack(Items.POTATO), new ItemStack(ItemList.JAR), new ItemStack(ItemList.ASHEN_FOND), 0F, 0.3D);
+        addByProductRecipe(new ItemStack(Items.CHICKEN), new ItemStack(ItemList.JAR), new ItemStack(ItemList.ASHEN_FOND), 0F,0.3D);
+        addByProductRecipe(new ItemStack(Items.COD), new ItemStack(ItemList.JAR), new ItemStack(ItemList.ASHEN_FOND), 0F, 0.3D);
+        addByProductRecipe(new ItemStack(Items.MUTTON), new ItemStack(ItemList.JAR), new ItemStack(ItemList.ASHEN_FOND), 0F, 0.3D);
+        addByProductRecipe(new ItemStack(Items.PORKCHOP), new ItemStack(ItemList.JAR), new ItemStack(ItemList.ASHEN_FOND), 0F, 0.3D);
+        addByProductRecipe(new ItemStack(Items.SALMON), new ItemStack(ItemList.JAR), new ItemStack(ItemList.ASHEN_FOND), 0F, 0.3D);
+        addByProductRecipe(new ItemStack(Items.RABBIT), new ItemStack(ItemList.JAR), new ItemStack(ItemList.ASHEN_FOND), 0F, 0.3D);
+        addByProductRecipe(new ItemStack(Items.BEEF), new ItemStack(ItemList.JAR), new ItemStack(ItemList.ASHEN_FOND), 0F, 0.3D);
+        addByProductRecipe(new ItemStack(Items.KELP), new ItemStack(ItemList.JAR), new ItemStack(ItemList.ASHEN_FOND), 0F, 0.3D);
 
         // Dustment Recipes
-        addByProductRecipe(new ItemStack(Items.IRON_ORE), new ItemStack(ItemList.JAR), new ItemStack(ItemList.RUIN_DUST), 0F, 15);
-        addByProductRecipe(new ItemStack(Items.GOLD_ORE), new ItemStack(ItemList.JAR), new ItemStack(ItemList.PRESERVATION_DUST), 0F, 15);
+        addByProductRecipe(new ItemStack(Items.IRON_ORE), new ItemStack(ItemList.JAR), new ItemStack(ItemList.RUIN_DUST), 0F, 0.3D);
+        addByProductRecipe(new ItemStack(Items.GOLD_ORE), new ItemStack(ItemList.JAR), new ItemStack(ItemList.PRESERVATION_DUST), 0F, 0.3D);
     }
 
-    public void addByProductRecipe(ItemStack input1, ItemStack input2, ItemStack result, float experience, int chance) {
+    public void addByProductRecipe(ItemStack input1, ItemStack input2, ItemStack result, float experience, double chance) {
         if(getByProduct(input1, input2) != ItemStack.EMPTY) return;
         this.byProductList.put(input1, input2, result);
         this.experienceList.put(result, experience);
@@ -59,7 +61,6 @@ public class ByProductRecipes {
     }
 
     private boolean compareItemStacks(ItemStack stack1, ItemStack stack2) {
-        Magelighter.LOGGER.info("Compared two Items: " + stack1 + " & " + stack2);
         return stack2.getItem() == stack1.getItem();
     }
 
@@ -80,19 +81,16 @@ public class ByProductRecipes {
         int upper = 100;
         int lower = 0;
         int r = (int) (Math.random() * (upper - lower)) + lower;
-        int chance = getByProductChance(stack);
-        if (r < chance) {
-            return true;
-        }
-        return false;
+        double chance = getByProductChance(stack);
+        return r < chance;
     }
 
-    public int getByProductChance(ItemStack stack) {
-        for (Entry<ItemStack, Integer> entry : this.chanceList.entrySet()) {
+    public double getByProductChance(ItemStack stack) {
+        for (Entry<ItemStack, Double> entry : this.chanceList.entrySet()) {
             if(this.compareItemStacks(stack, entry.getKey())) {
                 return entry.getValue();
             }
         }
-        return 0;
+        return 0.0D;
     }
 }

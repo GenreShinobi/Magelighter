@@ -26,12 +26,14 @@ import net.minecraft.tileentity.LockableTileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.*;
 import net.minecraft.util.math.MathHelper;
+import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 
 public abstract class AbstractClericsOvenTileEntity extends LockableTileEntity implements ISidedInventory, IRecipeHolder, IRecipeHelperPopulator, ITickableTileEntity {
+    private static final Logger LOGGER = Magelighter.LOGGER;
     private static final int[] SLOTS_UP = new int[]{0};
     private static final int[] SLOTS_DOWN = new int[]{2, 1};
     private static final int[] SLOTS_HORIZONTAL = new int[]{1};
@@ -137,6 +139,7 @@ public abstract class AbstractClericsOvenTileEntity extends LockableTileEntity i
     }
 
     public void tick() {
+
         boolean flag = this.isBurning();
         boolean flag1 = false;
         if (this.isBurning()) {
@@ -458,9 +461,7 @@ public abstract class AbstractClericsOvenTileEntity extends LockableTileEntity i
     private boolean canProduceByProduct() {
         if(((ItemStack)this.items.get(0)).isEmpty() || ((ItemStack)this.items.get(3)).isEmpty()) return false;
         else {
-            Magelighter.LOGGER.info("Checked Result");
             ItemStack result = ByProductRecipes.getInstance().getByProduct((ItemStack)this.items.get(0), (ItemStack)this.items.get(3));
-            Magelighter.LOGGER.info("result:" + result);
             if(result.isEmpty()) return false;
             else {
                 ItemStack byProduct = (ItemStack)this.items.get(4);
@@ -473,19 +474,34 @@ public abstract class AbstractClericsOvenTileEntity extends LockableTileEntity i
     }
 
     private void getByProduct() {
-        if (this.canProduceByProduct()) {
-            if (ByProductRecipes.getInstance().checkByProductChance(this.items.get(0))) {
-                ItemStack input1 = (ItemStack) this.items.get(0);
-                ItemStack input2 = (ItemStack) this.items.get(3);
-                ItemStack result = ByProductRecipes.getInstance().getByProduct(input1, input2);
-                ItemStack byProductOutput = (ItemStack) this.items.get(4);
+        try {
+            // gets the chance for the current by product. Set when the recipe is created in ByProductRecipes
+            double baseChance = ByProductRecipes.getInstance().getByProductChance(this.items.get(0));
+            LOGGER.debug("" + this.items.get(0) + ": " + baseChance);
 
-                if (byProductOutput.isEmpty()) this.items.set(4, result.copy());
-                else if (byProductOutput.getItem() == result.getItem()) byProductOutput.grow(result.getCount());
-
-                input2.shrink(1); // consumes jar
+            // gets a random double, checks against the current chance of the by product, and confirms the jar slot is not empty
+            assert world != null;
+            if (world.rand.nextDouble() <= Math.min(baseChance, 1.0D) && !this.items.get(3).isEmpty()) {
+                createByProduct(ByProductRecipes.getInstance().getByProduct(this.items.get(0),this.items.get(3)));
             }
+
+        } catch (Throwable var1) {
+            LOGGER.warn("Exception occurred while generating a by product from a clerics oven", var1);
         }
+    }
+
+    private void createByProduct(ItemStack byProduct) {
+        // if there's nothing in byproduct slot, create the byproduct.
+        if (this.items.get(4).isEmpty()) {
+            this.items.set(4, byProduct.copy());
+
+        // if the byproduct already exists, grow it.
+        } else if ( this.items.get(4).isItemEqual(byProduct) && this.items.get(4).getCount() < this.items.get(4).getMaxStackSize()) {
+            this.items.get(4).grow(1);
+        }
+
+        // consumes jar
+        this.items.get(3).shrink(1);
     }
 
     private void smelt(@Nullable IRecipe<?> recipe) {
@@ -496,11 +512,12 @@ public abstract class AbstractClericsOvenTileEntity extends LockableTileEntity i
 
             if (itemstack2.isEmpty()) {
                 this.items.set(2, itemstack1.copy());
-                this.getByProduct();
-            } else if (itemstack2.getItem() == itemstack1.getItem()) {
+            } else if (itemstack2.isItemEqual(itemstack1)) {
                 itemstack2.grow(itemstack1.getCount());
-                this.getByProduct();
             }
+
+            this.getByProduct();
+            itemstack.shrink(1);
 
             if (!this.world.isRemote) {
                 this.setRecipeUsed(recipe);
@@ -509,8 +526,6 @@ public abstract class AbstractClericsOvenTileEntity extends LockableTileEntity i
             if (itemstack.getItem() == Blocks.WET_SPONGE.asItem() && !this.items.get(1).isEmpty() && this.items.get(1).getItem() == Items.BUCKET) {
                 this.items.set(1, new ItemStack(Items.WATER_BUCKET));
             }
-
-            itemstack.shrink(1);
         }
     }
 }

@@ -32,6 +32,8 @@ public class ClericsOven extends AbstractClericsOvenBlock {
         return new ClericsOvenEntity();
     }
 
+
+
     protected void interactWith(World worldIn, BlockPos pos, PlayerEntity player) {
         TileEntity tileentity = worldIn.getTileEntity(pos);
         if (tileentity instanceof ClericsOvenEntity) {
