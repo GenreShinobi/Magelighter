@@ -6,7 +6,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "magelighter:ore_copper"
+          "name": "magelighter:copper_ore"
         }
       ],
       "conditions": [

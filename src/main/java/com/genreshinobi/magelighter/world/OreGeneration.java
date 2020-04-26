@@ -18,7 +18,7 @@ public class OreGeneration {
             biome.addFeature(
                     GenerationStage.Decoration.UNDERGROUND_ORES,
                     Feature.ORE.withConfiguration(
-                            new OreFeatureConfig(OreFeatureConfig.FillerBlockType.NATURAL_STONE, BlockList.ORE_COPPER.getDefaultState(), 6))
+                            new OreFeatureConfig(OreFeatureConfig.FillerBlockType.NATURAL_STONE, BlockList.COPPER_ORE.getDefaultState(), 6))
                             .withPlacement(Placement.COUNT_RANGE.configure(new CountRangeConfig(20, 0, 5, 64))));
         }
     }

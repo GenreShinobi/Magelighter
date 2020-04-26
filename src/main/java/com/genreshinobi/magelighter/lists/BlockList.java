@@ -15,7 +15,7 @@ public class BlockList {
     public static TileEntityType<ClericsOvenEntity> CLERICSOVEN_TILE;
     @ObjectHolder("magelighter:clerics_oven")
     public static ContainerType<ClericsOvenContainer> CLERICSOVEN_CONTAINER;
-    @ObjectHolder("magelighter:ore_copper")
-    public static OreBlock ORE_COPPER;
+    @ObjectHolder("magelighter:copper_ore")
+    public static OreBlock COPPER_ORE;
 
 }

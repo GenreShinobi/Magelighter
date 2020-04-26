@@ -37,12 +37,13 @@ public class RegistryEvents {
         event.getRegistry().registerAll(
                 //BlockItems
                 ItemList.CLERICS_OVEN = new BlockItem(BlockList.CLERICS_OVEN, new Item.Properties().group(MOD_GROUP)).setRegistryName(Objects.requireNonNull(BlockList.CLERICS_OVEN.getRegistryName())),
-                ItemList.ORE_COPPER = new BlockItem(BlockList.ORE_COPPER, new Item.Properties().group(MOD_GROUP)).setRegistryName(Objects.requireNonNull(BlockList.ORE_COPPER.getRegistryName())),
+                ItemList.COPPER_ORE = new BlockItem(BlockList.COPPER_ORE, new Item.Properties().group(MOD_GROUP)).setRegistryName(Objects.requireNonNull(BlockList.COPPER_ORE.getRegistryName())),
                 //Items
                 ItemList.CLAY_JAR = new Item(new Item.Properties().group(MOD_GROUP)).setRegistryName(location("jar_clay")),
                 ItemList.JAR = new Item(new Item.Properties().group(MOD_GROUP)).setRegistryName(location("jar")),
                 ItemList.ASHEN_FOND = new Item(new Item.Properties().group(MOD_GROUP)).setRegistryName(location("ashen_fond")),
-                ItemList.RUIN_DUST = new Item(new Item.Properties().group(MOD_GROUP)).setRegistryName(location("ruin_dust"))
+                ItemList.RUIN_DUST = new Item(new Item.Properties().group(MOD_GROUP)).setRegistryName(location("ruin_dust")),
+                ItemList.COPPER_INGOT = new Item(new Item.Properties().group(MOD_GROUP)).setRegistryName(location("copper_ingot"))
         );
     }
 
@@ -51,7 +52,7 @@ public class RegistryEvents {
     public static void registerBlocks(final RegistryEvent.Register<Block> event) {
         event.getRegistry().registerAll(
                 BlockList.CLERICS_OVEN = new ClericsOven(Block.Properties.create(Material.ROCK).hardnessAndResistance(3.5F).lightValue(13)).setRegistryName(location("clerics_oven")),
-                BlockList.ORE_COPPER = (OreBlock) new OreBlock(Block.Properties.create(Material.ROCK).hardnessAndResistance(3.0F)).setRegistryName(location("ore_copper"))
+                BlockList.COPPER_ORE = (OreBlock) new OreBlock(Block.Properties.create(Material.ROCK).hardnessAndResistance(3.0F)).setRegistryName(location("copper_ore"))
         );
     }
 
@@ -62,9 +63,7 @@ public class RegistryEvents {
 
     @SubscribeEvent
     public static void registerContainerEntity(final RegistryEvent.Register<ContainerType<?>> event) {
-        event.getRegistry().register(IForgeContainerType.create((windowId, inv, data) -> {
-            return new ClericsOvenContainer(windowId, inv);
-        }).setRegistryName(Objects.requireNonNull(BlockList.CLERICS_OVEN.getRegistryName())));
+        event.getRegistry().register(IForgeContainerType.create((windowId, inv, data) -> new ClericsOvenContainer(windowId, inv)).setRegistryName(Objects.requireNonNull(BlockList.CLERICS_OVEN.getRegistryName())));
     }
 
     @SubscribeEvent

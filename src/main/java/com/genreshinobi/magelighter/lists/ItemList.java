@@ -33,8 +33,11 @@ public class ItemList {
     @ObjectHolder("magelighter:autonomy_dust")
     public static Item AUTONOMY_DUST;
 
-    @ObjectHolder("magelighter:ore_copper")
-    public static Item ORE_COPPER;
+    @ObjectHolder("magelighter:copper_ore")
+    public static Item COPPER_ORE;
+
+    @ObjectHolder("magelighter:copper_ingot")
+    public static Item COPPER_INGOT;
 
 
 }
