@@ -1,17 +1,17 @@
 package com.genreshinobi.magelighter.tileentities;
 
+import com.genreshinobi.magelighter.Magelighter;
+import com.genreshinobi.magelighter.item.crafting.ByProductRecipes;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.minecraft.block.AbstractFurnaceBlock;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.item.ExperienceOrbEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.IRecipeHelperPopulator;
 import net.minecraft.inventory.IRecipeHolder;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.inventory.ItemStackHelper;
-import net.minecraft.inventory.container.Container;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -26,7 +26,6 @@ import net.minecraft.tileentity.LockableTileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.*;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.ITextComponent;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -84,11 +83,7 @@ public abstract class AbstractClericsOvenTileEntity extends LockableTileEntity i
 
     @Deprecated // Forge - get burn times by calling ForgeHooks#getBurnTime(ItemStack)
     public static Map<Item, Integer> getBurnTimes() {
-        Map<Item, Integer> map = Maps.newLinkedHashMap();
-        // Adds Blaze Powder as a valid fuel source???
-        addItemBurnTime(map, Items.BLAZE_POWDER, 1600);
-        addItemBurnTime(map, Items.DIAMOND, 1600);
-        return map;
+        return Maps.newLinkedHashMap();
     }
 
     private static void addItemTagBurnTime(Map<Item, Integer> map, Tag<Item> itemTag, int burnTimeIn) {
@@ -112,7 +107,7 @@ public abstract class AbstractClericsOvenTileEntity extends LockableTileEntity i
         this.burnTime = compound.getInt("BurnTime");
         this.cookTime = compound.getInt("CookTime");
         this.cookTimeTotal = compound.getInt("CookTimeTotal");
-        this.recipesUsed = this.getBurnTime(this.items.get(1));
+        this.recipesUsed = net.minecraftforge.common.ForgeHooks.getBurnTime(this.items.get(1));
         int i = compound.getShort("RecipesUsedSize");
 
         for(int j = 0; j < i; ++j) {
@@ -148,12 +143,13 @@ public abstract class AbstractClericsOvenTileEntity extends LockableTileEntity i
             --this.burnTime;
         }
 
+        assert this.world != null;
         if (!this.world.isRemote) {
             ItemStack itemstack = this.items.get(1);
             if (this.isBurning() || !itemstack.isEmpty() && !this.items.get(0).isEmpty()) {
                 IRecipe<?> irecipe = this.world.getRecipeManager().getRecipe((IRecipeType<AbstractCookingRecipe>)this.recipeType, this, this.world).orElse(null);
                 if (!this.isBurning() && this.canSmelt(irecipe)) {
-                    this.burnTime = this.getBurnTime(itemstack);
+                    this.burnTime = net.minecraftforge.common.ForgeHooks.getBurnTime(itemstack);
                     this.recipesUsed = this.burnTime;
                     if (this.isBurning()) {
                         flag1 = true;
@@ -175,7 +171,7 @@ public abstract class AbstractClericsOvenTileEntity extends LockableTileEntity i
                     if (this.cookTime == this.cookTimeTotal) {
                         this.cookTime = 0;
                         this.cookTimeTotal = this.func_214005_h();
-                        this.func_214007_c(irecipe);
+                        this.smelt(irecipe);
                         flag1 = true;
                     }
                 } else {
@@ -187,7 +183,7 @@ public abstract class AbstractClericsOvenTileEntity extends LockableTileEntity i
 
             if (flag != this.isBurning()) {
                 flag1 = true;
-                this.world.setBlockState(this.pos, this.world.getBlockState(this.pos).with(AbstractFurnaceBlock.LIT, Boolean.valueOf(this.isBurning())), 3);
+                this.world.setBlockState(this.pos, this.world.getBlockState(this.pos).with(AbstractFurnaceBlock.LIT, this.isBurning()), 3);
             }
         }
 
@@ -242,12 +238,12 @@ public abstract class AbstractClericsOvenTileEntity extends LockableTileEntity i
         }
     }
 
-    protected int getBurnTime(ItemStack p_213997_1_) {
-        if (p_213997_1_.isEmpty()) {
+    protected int getBurnTime(ItemStack itemStack) {
+        if (itemStack.isEmpty()) {
             return 0;
         } else {
-            Item item = p_213997_1_.getItem();
-            return this.getBurnTime(p_213997_1_);
+            Item item = itemStack.getItem();
+            return net.minecraftforge.common.ForgeHooks.getBurnTime(itemStack);
         }
     }
 
@@ -457,5 +453,64 @@ public abstract class AbstractClericsOvenTileEntity extends LockableTileEntity i
         super.remove();
         for (int x = 0; x < handlers.length; x++)
             handlers[x].invalidate();
+    }
+
+    private boolean canProduceByProduct() {
+        if(((ItemStack)this.items.get(0)).isEmpty() || ((ItemStack)this.items.get(3)).isEmpty()) return false;
+        else {
+            Magelighter.LOGGER.info("Checked Result");
+            ItemStack result = ByProductRecipes.getInstance().getByProduct((ItemStack)this.items.get(0), (ItemStack)this.items.get(3));
+            Magelighter.LOGGER.info("result:" + result);
+            if(result.isEmpty()) return false;
+            else {
+                ItemStack byProduct = (ItemStack)this.items.get(4);
+                if(byProduct.isEmpty()) return true;
+                if(!byProduct.isItemEqual(result)) return false;
+                int res = byProduct.getCount() + result.getCount();
+                return res <= getInventoryStackLimit() && res <= byProduct.getMaxStackSize();
+            }
+        }
+    }
+
+    private void getByProduct() {
+        if (this.canProduceByProduct()) {
+            if (ByProductRecipes.getInstance().checkByProductChance(this.items.get(0))) {
+                ItemStack input1 = (ItemStack) this.items.get(0);
+                ItemStack input2 = (ItemStack) this.items.get(3);
+                ItemStack result = ByProductRecipes.getInstance().getByProduct(input1, input2);
+                ItemStack byProductOutput = (ItemStack) this.items.get(4);
+
+                if (byProductOutput.isEmpty()) this.items.set(4, result.copy());
+                else if (byProductOutput.getItem() == result.getItem()) byProductOutput.grow(result.getCount());
+
+                input2.shrink(1); // consumes jar
+            }
+        }
+    }
+
+    private void smelt(@Nullable IRecipe<?> recipe) {
+        if (recipe != null && this.canSmelt(recipe)) {
+            ItemStack itemstack = this.items.get(0); // The input slot
+            ItemStack itemstack1 = recipe.getRecipeOutput(); // The potential output
+            ItemStack itemstack2 = this.items.get(2); // The output slot
+
+            if (itemstack2.isEmpty()) {
+                this.items.set(2, itemstack1.copy());
+                this.getByProduct();
+            } else if (itemstack2.getItem() == itemstack1.getItem()) {
+                itemstack2.grow(itemstack1.getCount());
+                this.getByProduct();
+            }
+
+            if (!this.world.isRemote) {
+                this.setRecipeUsed(recipe);
+            }
+
+            if (itemstack.getItem() == Blocks.WET_SPONGE.asItem() && !this.items.get(1).isEmpty() && this.items.get(1).getItem() == Items.BUCKET) {
+                this.items.set(1, new ItemStack(Items.WATER_BUCKET));
+            }
+
+            itemstack.shrink(1);
+        }
     }
 }

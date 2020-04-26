@@ -6,18 +6,16 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 
 public class FuelSlot extends Slot {
-    private final AbstractClericsOvenContainer clericsOvenContainer;
 
-    public FuelSlot(AbstractClericsOvenContainer clericsOvenContainer, IInventory inventory, int index, int xPos, int yPos) {
+    public FuelSlot(AbstractClericsOvenContainer containerIn, IInventory inventory, int index, int xPos, int yPos) {
         super(inventory, index, xPos, yPos);
-        this.clericsOvenContainer = clericsOvenContainer;
     }
 
     /**
      * Check if the stack is allowed to be placed in this slot, used for armor slots as well as furnace fuel.
      */
     public boolean isItemValid(ItemStack stack) {
-        return this.clericsOvenContainer.isFuel(stack) || isBucket(stack);
+        return AbstractClericsOvenContainer.isFuel(stack) || isBucket(stack);
     }
 
     public int getItemStackLimit(ItemStack stack) {

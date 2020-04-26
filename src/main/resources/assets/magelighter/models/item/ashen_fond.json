@@ -1,0 +1,8 @@
+{
+  "parent": "item/generated",
+  "textures":
+  {
+    "layer0": "magelighter:item/jar",
+    "layer1": "magelighter:item/ash_fond"
+  }
+}

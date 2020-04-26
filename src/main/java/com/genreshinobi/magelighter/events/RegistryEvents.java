@@ -5,14 +5,11 @@ import com.genreshinobi.magelighter.blocks.ClericsOven;
 import com.genreshinobi.magelighter.inventory.container.ClericsOvenContainer;
 import com.genreshinobi.magelighter.lists.BlockList;
 import com.genreshinobi.magelighter.lists.ItemList;
-import com.genreshinobi.magelighter.lists.PotionList;
 import com.genreshinobi.magelighter.tileentities.ClericsOvenEntity;
-import net.minecraft.block.AbstractFurnaceBlock;
+import com.genreshinobi.magelighter.util.MagelighterGroup;
 import net.minecraft.block.Block;
-import net.minecraft.block.SoundType;
+import net.minecraft.block.OreBlock;
 import net.minecraft.block.material.Material;
-import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
@@ -26,50 +23,59 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.apache.logging.log4j.Logger;
 
-import java.util.UUID;
+import java.util.Objects;
 
 @Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD)
 public class RegistryEvents {
 
     public static final Logger LOGGER = Magelighter.LOGGER;
     public static final String MOD_ID = Magelighter.MOD_ID;
+    public static final ItemGroup MOD_GROUP = MagelighterGroup.instance;
 
     @SubscribeEvent
     public static void registerItems(final RegistryEvent.Register<Item> event) {
         event.getRegistry().registerAll(
-            ItemList.CLERICSOVEN = new BlockItem(BlockList.CLERICSOVEN, new Item.Properties().group(ItemGroup.MISC)).setRegistryName(BlockList.CLERICSOVEN.getRegistryName()));
+                //BlockItems
+                ItemList.CLERICS_OVEN = new BlockItem(BlockList.CLERICS_OVEN, new Item.Properties().group(MOD_GROUP)).setRegistryName(Objects.requireNonNull(BlockList.CLERICS_OVEN.getRegistryName())),
+                ItemList.ORE_COPPER = new BlockItem(BlockList.ORE_COPPER, new Item.Properties().group(MOD_GROUP)).setRegistryName(Objects.requireNonNull(BlockList.ORE_COPPER.getRegistryName())),
+                //Items
+                ItemList.CLAY_JAR = new Item(new Item.Properties().group(MOD_GROUP)).setRegistryName(location("jar_clay")),
+                ItemList.JAR = new Item(new Item.Properties().group(MOD_GROUP)).setRegistryName(location("jar")),
+                ItemList.ASHEN_FOND = new Item(new Item.Properties().group(MOD_GROUP)).setRegistryName(location("ashen_fond")),
+                ItemList.RUIN_DUST = new Item(new Item.Properties().group(MOD_GROUP)).setRegistryName(location("ruin_dust"))
+        );
     }
+
 
     @SubscribeEvent
     public static void registerBlocks(final RegistryEvent.Register<Block> event) {
         event.getRegistry().registerAll(
-                BlockList.CLERICSOVEN = new ClericsOven(Block.Properties.create(Material.ROCK).hardnessAndResistance(3.5F).lightValue(13)).setRegistryName(location("clerics_oven")));
+                BlockList.CLERICS_OVEN = new ClericsOven(Block.Properties.create(Material.ROCK).hardnessAndResistance(3.5F).lightValue(13)).setRegistryName(location("clerics_oven")),
+                BlockList.ORE_COPPER = (OreBlock) new OreBlock(Block.Properties.create(Material.ROCK).hardnessAndResistance(3.0F)).setRegistryName(location("ore_copper"))
+        );
     }
 
     @SubscribeEvent
     public static void registerTileEntity(final RegistryEvent.Register<TileEntityType<?>> event) {
-        event.getRegistry().register(TileEntityType.Builder.create(ClericsOvenEntity::new, BlockList.CLERICSOVEN).build(null).setRegistryName(BlockList.CLERICSOVEN.getRegistryName()));
+        event.getRegistry().register(TileEntityType.Builder.create(ClericsOvenEntity::new, BlockList.CLERICS_OVEN).build(null).setRegistryName(Objects.requireNonNull(BlockList.CLERICS_OVEN.getRegistryName())));
     }
 
     @SubscribeEvent
     public static void registerContainerEntity(final RegistryEvent.Register<ContainerType<?>> event) {
         event.getRegistry().register(IForgeContainerType.create((windowId, inv, data) -> {
             return new ClericsOvenContainer(windowId, inv);
-        }).setRegistryName(BlockList.CLERICSOVEN.getRegistryName()));
+        }).setRegistryName(Objects.requireNonNull(BlockList.CLERICS_OVEN.getRegistryName())));
     }
 
     @SubscribeEvent
     public static void registerPotions(final RegistryEvent.Register<Potion> event) {
         event.getRegistry().registerAll(
-            PotionList.more_health_potion = new Potion(new EffectInstance(PotionList.more_health_effect, 3600)).setRegistryName(Location("more_health"))
         );
     }
 
     @SubscribeEvent
     public static void registerEffect(final RegistryEvent.Register<Effect> event) {
-        event.getRegistry().registerAll(
-                PotionList.more_health_effect = new PotionList.MoreHealthEffect(EffectType.BENEFICIAL, 0xd4ff00).addAttributesModifier(SharedMonsterAttributes.MAX_HEALTH, UUID.randomUUID().toString(), (double)0.5F, AttributeModifier.Operation.MULTIPLY_TOTAL).setRegistryName("more_health")
-        );
+        event.getRegistry().registerAll();
     }
 
     private static ResourceLocation Location(String name) {

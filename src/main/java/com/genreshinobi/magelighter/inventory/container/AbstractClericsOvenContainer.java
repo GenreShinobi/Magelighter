@@ -1,7 +1,6 @@
 package com.genreshinobi.magelighter.inventory.container;
 
 import com.genreshinobi.magelighter.lists.ItemList;
-import com.genreshinobi.magelighter.tileentities.AbstractClericsOvenTileEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.IInventory;
@@ -153,8 +152,8 @@ public class AbstractClericsOvenContainer extends Container {
         return itemstack;
     }
 
-    protected boolean isFuel(ItemStack itemStack) {
-        return AbstractClericsOvenTileEntity.isFuel(itemStack);
+    public static boolean isFuel(ItemStack item) {
+        return net.minecraftforge.common.ForgeHooks.getBurnTime(item) > 0;
     }
 
     protected boolean isJar(ItemStack itemStack) {
