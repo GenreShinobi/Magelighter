@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "copper_ingot",
+  "pattern": [
+    "###",
+    "###",
+    "###"
+  ],
+  "key": {
+    "#": {
+      "item": "magelighter:copper_nugget"
+    }
+  },
+  "result": {
+    "item": "magelighter:copper_ingot"
+  }
+}

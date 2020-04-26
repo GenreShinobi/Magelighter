@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "magelighter:copper_ingot"
+    }
+  ],
+  "result": {
+    "item": "magelighter:copper_nugget",
+    "count": 9
+  }
+}
