@@ -1,11 +1,15 @@
 {
   "block.magelighter.clerics_oven": "Cleric's Oven",
+
   "block.magelighter.copper_ore": "Copper Ore",
+  "block.magelighter.copper_block": "Copper Block",
 
   "item.magelighter.jar_clay": "Unfired Clay Jar",
   "item.magelighter.jar": "Clay Jar",
   "item.magelighter.ashen_fond": "Ashen Fond",
   "item.magelighter.ruin_dust": "Dustments of Ruin",
+  "item.magelighter.copper_ingot": "Copper Ingot",
+  "item.magelighter.copper_nugget": "Copper Nugget",
 
   "itemGroup.magelighter_group": "Magelighter Mod"
 }
