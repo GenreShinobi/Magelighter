@@ -53,13 +53,13 @@ public abstract class AbstractClericsOvenScreen<T extends AbstractClericsOvenCon
         int i = this.guiLeft;
         int j = this.guiTop;
         this.blit(i, j, 0, 0, this.xSize, this.ySize);
-        if (((AbstractClericsOvenContainer)this.container).func_217061_l()) {
-            int k = ((AbstractClericsOvenContainer)this.container).getBurnLeftScaled();
-            this.blit(i + 56, j + 36 + 12 - k, 176, 12 - k, 14, k + 1);
+        if (this.container.func_217061_l()) {
+            int k = this.container.getBurnLeftScaled();
+            this.blit(i + 52, j + 36 + 13 - k, 176, 12 - k, 14, k + 1);
         }
 
-        int l = ((AbstractClericsOvenContainer)this.container).getCookProgressionScaled();
-        this.blit(i + 79, j + 34, 176, 14, l + 1, 16);
+        int l = this.container.getCookProgressionScaled();
+        this.blit(i + 76, j + 24, 176, 14, l + 1, 16);
     }
 
     public boolean mouseClicked(double p_mouseClicked_1_, double p_mouseClicked_3_, int p_mouseClicked_5_) {
